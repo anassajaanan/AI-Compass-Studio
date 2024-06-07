@@ -7,6 +7,7 @@ from . import views
 urlpatterns = [
     # path('admin/', admin.site.urls),
 	# path("", views.login_42, name="index"),
-	path("api/seo_opt", views.seo_opt, name="seo_opt"),
+	path("seo_opt", views.seo_opt, name="seo_opt"),
+	path("say_hello", views.say_hello, name="say_hello"),
 
 ]
