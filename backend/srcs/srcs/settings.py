@@ -25,12 +25,51 @@ SECRET_KEY = 'django-insecure-l*fjen*@cpws$alz=avi4h(r1giq0@+u^ts9+nm^of&j8df2*+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost' , '127.0.0.1', 'http://127.0.0.1:5500', 'https://localhost', 'http://172.17.0.2:443']
 
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:443',
+    'http://localhost:443',
+    'https://localhost',
+    'https://frontend',
+    'http://localhost:9090',
+    'http://127.0.0.1:9090',
+    # Add more origins if needed
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+r"^https://\w+\.domain\.com$",
+]
+
+CORS_ALLOW_ALL_ORIGINS=False
+
+CORS_ALLOW_METHODS = [
+'DELETE',
+'GET',
+'OPTIONS',
+'PATCH',
+'POST',
+'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'Accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'Content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+	'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +79,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+	'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
