@@ -7,6 +7,6 @@ from . import views
 urlpatterns = [
     # path('admin/', admin.site.urls),
 	# path("", views.login_42, name="index"),
-	# path("api/404error.html", views.show_error, name="404error"),
+	path("api/seo_opt", views.seo_opt, name="seo_opt"),
 
 ]
