@@ -140,7 +140,7 @@ def editing_view(request):
 			array = get_images_from_unsplash(tag)
 			images.append(array)
 
-		return JsonResponse({"images": images})
+		return JsonResponse({"content": images})
 
 
 	else:
