@@ -1,4 +1,7 @@
 from django.shortcuts import render
+import requests , re, json, random , string
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
@@ -12,6 +15,11 @@ from .unsplash import get_images_from_unsplash
 @csrf_exempt
 def seo_opt(request):
 	pass
+
+
+@csrf_exempt
+def say_hello(request):
+	return JsonResponse({"message": "Hello, World!"})
 
 
 @csrf_exempt
