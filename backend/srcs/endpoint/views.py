@@ -1,27 +1,26 @@
 from django.shortcuts import render
-<<<<<<< HEAD
+from pymongo import MongoClient
+import pymongo
 import requests , re, json, random , string
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-=======
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
+import openai
 from django.conf import settings
 import json
+from .utils import generate_embeddings_from_openai
 
 
->>>>>>> d57e3f7b84a6a2a0ab2853f2082eb50f91e4ec63
 # Create your views here.
 @csrf_exempt
 def seo_opt(request):
 	pass
 
-<<<<<<< HEAD
 @csrf_exempt
 def say_hello(request):
 	return JsonResponse({"message": "Hello, World!"})
-=======
 
 @csrf_exempt
 def translate(request):
@@ -78,4 +77,26 @@ def create_thumbnail(request):
 		return JsonResponse({"image_url": image_url})
 	else:
 		return JsonResponse({"error": "Invalid request method"})
->>>>>>> d57e3f7b84a6a2a0ab2853f2082eb50f91e4ec63
+
+@csrf_exempt
+def ai_search(request):
+	if (request.method != 'POST'):
+		return JsonResponse({"error": "Invalid request method"}, status=405)
+	body_json = json.loads(request.body) 
+	msg = str(body_json["msg"])
+	client = pymongo.MongoClient("mongodb+srv://aboodytukka:etip1oHamMlrXgJz@cluster0.dsxiqji.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+	db = client.db
+	collection = db.video
+	# search for the video in the database
+	results = collection.aggregate([
+	{"$vectorSearch": {
+		"queryVector": generate_embeddings_from_openai(msg),
+		"path": "embedding",
+		"numCandidates": 100,
+		"limit": 3,
+		"index": "PlotSemanticSearch"
+	}}
+])
+	for documents in results:
+		print(f"Movie Name: {documents["video_title"]},\n Movie Plot: {documents["video_plot"]},\n")
+	return JsonResponse({"results": "bye"})
