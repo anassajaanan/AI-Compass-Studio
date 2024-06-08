@@ -28,7 +28,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost' , '127.0.0.1', 'http://127.0.0.1:5500', 'https://localhost', 'http://172.17.0.2:443']
+ALLOWED_HOSTS = ['localhost' , '127.0.0.1', 'http://127.0.0.1:5500', 'https://localhost', 'http://172.17.0.2:443', 'http://127.0.0.1:3000', 'http://localhost:3000']
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:443',
@@ -37,6 +37,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://frontend',
     'http://localhost:9090',
     'http://127.0.0.1:9090',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
     # Add more origins if needed
 ]
 

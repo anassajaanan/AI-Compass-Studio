@@ -86,7 +86,9 @@ def create_thumbnail(request):
 def brainstorming_view(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		user_prompt = data.get('prompt')
+		user_prompt = data.get('msg')
+
+		print(user_prompt)
 
 		response = get_ai_response(user_prompt)
 		if response:
@@ -101,7 +103,7 @@ def brainstorming_view(request):
 def writing_view(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		user_prompt = data.get('prompt')
+		user_prompt = data.get('msg')
 
 		response = get_ai_response_writing(user_prompt)
 		if response:
@@ -117,7 +119,7 @@ def editing_view(request):
 
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		user_prompt = data.get('prompt')
+		user_prompt = data.get('msg')
 		print(user_prompt)
 	
 
