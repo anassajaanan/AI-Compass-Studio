@@ -101,7 +101,10 @@ def create_thumbnail(request):
 		)
 
 		image_url = response.data[0].url
-		return JsonResponse({"image_url": image_url})
+		print(image_url)
+
+		my_list = [image_url]
+		return JsonResponse({"content": my_list})
 	else:
 		return JsonResponse({"error": "Invalid request method"})
 
@@ -165,6 +168,13 @@ def editing_view(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		user_prompt = data.get('msg')
+
+
+		# check if thumbnail in the user_prompt
+		if "thumbnail" in user_prompt:
+			print("Thumbnail in user_prompt")
+			return create_thumbnail(request)
+
 		print(user_prompt)
 	
 
@@ -184,8 +194,9 @@ def editing_view(request):
 		images = []
 		for tag in tags_list:
 			array = get_images_from_unsplash(tag)
-			for img in array:
-				images.append(img)
+			# add all links images to the list
+			if array:
+				images.extend(array)
 
 		return JsonResponse({"content": images})
 
