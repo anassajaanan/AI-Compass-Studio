@@ -13,6 +13,11 @@ import json
 from .utils import generate_embeddings_from_openai
 
 
+from .brainstorming_ai import get_ai_response
+from .writing_ai import get_ai_response_writing
+from .unsplash import get_images_from_unsplash
+from .reviews_ai import get_ai_response_reviews
+
 # Create your views here.
 @csrf_exempt
 def seo_opt(request):
@@ -22,13 +27,14 @@ def seo_opt(request):
 def say_hello(request):
 	return JsonResponse({"message": "Hello, World!"})
 
+
 @csrf_exempt
 def translate(request):
 	client = OpenAI(api_key=settings.OPENAI_API_KEY)
 	
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		content = data.get('content')
+		content = data.get('msg')
 		target_language = data.get('language')  # e.g., "French"
 
 		print(content)
@@ -60,7 +66,7 @@ def create_thumbnail(request):
 
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		user_prompt = data.get('prompt')
+		user_prompt = data.get('msg')
 		print(user_prompt)
 		
 		enhanced_prompt = f"Create a detailed, visually appealing thumbnail that illustrates: {user_prompt}. The image should be vibrant, clear, and engaging, suitable for a digital media platform viewer."
@@ -100,3 +106,86 @@ def ai_search(request):
 	for documents in results:
 		print(f"Movie Name: {documents["video_title"]},\n Movie Plot: {documents["video_plot"]},\n")
 	return JsonResponse({"results": "bye"})
+	
+
+
+
+
+@csrf_exempt
+def brainstorming_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('msg')
+
+		# print(user_prompt)
+
+		response = get_ai_response(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+	
+
+@csrf_exempt
+def writing_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('msg')
+
+		response = get_ai_response_writing(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+
+@csrf_exempt
+def editing_view(request):
+	client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('msg')
+		print(user_prompt)
+	
+
+		response = client.chat.completions.create(
+				model="gpt-4o",
+				messages=[
+					{"role": "system", "content": "You are an assistant trained to extract the most relevant and specific tags from a content description provided by digital creators. These tags should represent key concepts or elements within the content that are suitable for fetching corresponding images." + " Based Based on the description provided, identify and list the most important 3 tags that can be used to fetch images relevant to each aspect of the content."},
+					{"role": "user", "content": user_prompt},
+					{"role": "assistant", "content": "Here are the most important 3 tags that can be used to fetch images relevant to each aspect of the content: Tag_1\nTag_2\nTag_3 "}
+				]
+			)
+		
+		# Extract the tags from the response
+		tags = response.choices[0].message.content
+		tags_list = tags.split("\n")
+		print(tags_list)
+		images = []
+		for tag in tags_list:
+			array = get_images_from_unsplash(tag)
+			images.append(array)
+
+		return JsonResponse({"images": images})
+
+
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+
+@csrf_exempt
+def reviews_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('msg')
+
+		response = get_ai_response_reviews(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
