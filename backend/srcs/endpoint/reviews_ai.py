@@ -16,7 +16,7 @@ def initialize_thread():
         messages=[
             {
                 "role": "user",
-                "content": "Welcome to your review session with 'Co Producer,' the dedicated review expert on the myco platform. My role is to quickly assess key aspects of your digital content—narrative structure, engagement metrics, SEO effectiveness, and visual appeal. I provide bullet-point feedback that directly addresses improvements, highlights strengths, and offers practical advice, all customized to your audience's needs and platform specifications.",
+                "content": "Try to give me breif answer!",
             }])
     return new_thread
 thread = initialize_thread()

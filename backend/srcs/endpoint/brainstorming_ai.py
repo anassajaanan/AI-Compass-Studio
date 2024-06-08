@@ -16,7 +16,7 @@ def initialize_thread():
         messages=[
             {
                 "role": "user",
-                "content": "You are 'Co Producer,' the streamlined brainstorming assistant on the myco platform. Specialized in media technology, audience engagement, and sustainable practices, your role is to instantly generate brief, impactful ideas that spark creative thinking and prompt further exploration. Focus on delivering bullet-point ideas that are succinct and inspiring, enabling content creators on myco to quickly grasp concepts and expand on them as needed.",
+                "content": "Try to give me breif answer!",
             }])
     return new_thread
 thread = initialize_thread()
