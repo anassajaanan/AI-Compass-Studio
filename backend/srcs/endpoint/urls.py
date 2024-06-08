@@ -9,6 +9,8 @@ urlpatterns = [
 	# path("", views.login_42, name="index"),
 	path("api/say_hello", views.say_hello, name="say_hello"),
 	path("api/seo_opt", views.seo_opt, name="seo_opt"),
+	path("api/get_summary", views.get_summary, name="get_summary"),
+	path("api/ai_search", views.ai_search, name="ai_search"),
 
 	path("api/translate", views.translate, name="translate"),
 	path('api/create_thumbnail', views.create_thumbnail, name='create_thumbnail'),

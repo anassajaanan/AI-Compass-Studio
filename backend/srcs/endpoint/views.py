@@ -1,12 +1,18 @@
 from django.shortcuts import render
+from pymongo import MongoClient
+import pymongo
 import requests , re, json, random , string
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
+import openai
 from django.conf import settings
 import json
+from .utils import generate_embeddings_from_openai , get_video_index
+
+
 from .brainstorming_ai import get_ai_response
 from .writing_ai import get_ai_response_writing
 from .unsplash import get_images_from_unsplash
@@ -17,6 +23,26 @@ from .reviews_ai import get_ai_response_reviews
 def seo_opt(request):
 	pass
 
+@csrf_exempt
+def get_summary(request):
+	if (request.method != 'POST'):
+		return JsonResponse({"error": "Invalid request method"}, status=405)
+	try:
+		body_json = json.loads(request.body) 
+		msg = str(body_json["msg"])
+		client = pymongo.MongoClient("mongodb+srv://aboodytukka:etip1oHamMlrXgJz@cluster0.dsxiqji.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+		db = client.db
+		collection = db.video
+		video_document = collection.find_one({"video_title": msg})
+		print(msg)
+		# print(video_document)
+
+		if video_document:
+			return JsonResponse({"summary": video_document['video_plot']})
+		else:
+			return JsonResponse({"error": "Video not found"}, status=404)
+	except Exception as e:
+		return JsonResponse({"error": str(e)}, status=400)
 
 @csrf_exempt
 def say_hello(request):
@@ -78,16 +104,36 @@ def create_thumbnail(request):
 		return JsonResponse({"image_url": image_url})
 	else:
 		return JsonResponse({"error": "Invalid request method"})
+
+@csrf_exempt
+def ai_search(request):
+	if (request.method != 'POST'):
+		return JsonResponse({"error": "Invalid request method"}, status=405)
+	body_json = json.loads(request.body) 
+	msg = str(body_json["msg"])
+	client = pymongo.MongoClient("mongodb+srv://aboodytukka:etip1oHamMlrXgJz@cluster0.dsxiqji.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+	db = client.db
+	collection = db.video
+	# search for the video in the database
+	results = collection.aggregate([
+	{"$vectorSearch": {
+		"queryVector": generate_embeddings_from_openai(msg),
+		"path": "embedding",
+		"numCandidates": 100,
+		"limit": 3,
+		"index": "PlotSemanticSearch"
+	}}
+])
 	
-
-
-
+	return JsonResponse({"videos": get_video_index([result["video_title"] for result in results])})
 
 @csrf_exempt
 def brainstorming_view(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		user_prompt = data.get('msg')
+
+		# print(user_prompt)
 
 		response = get_ai_response(user_prompt)
 		if response:
