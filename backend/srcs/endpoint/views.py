@@ -24,6 +24,27 @@ def seo_opt(request):
 	pass
 
 @csrf_exempt
+def get_summary(request):
+	if (request.method != 'POST'):
+		return JsonResponse({"error": "Invalid request method"}, status=405)
+	try:
+		body_json = json.loads(request.body) 
+		msg = str(body_json["msg"])
+		client = pymongo.MongoClient("mongodb+srv://aboodytukka:etip1oHamMlrXgJz@cluster0.dsxiqji.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+		db = client.db
+		collection = db.video
+		video_document = collection.find_one({"video_title": msg})
+		print(msg)
+		# print(video_document)
+
+		if video_document:
+			return JsonResponse({"summary": video_document['video_plot']})
+		else:
+			return JsonResponse({"error": "Video not found"}, status=404)
+	except Exception as e:
+		return JsonResponse({"error": str(e)}, status=400)
+
+@csrf_exempt
 def say_hello(request):
 	return JsonResponse({"message": "Hello, World!"})
 
