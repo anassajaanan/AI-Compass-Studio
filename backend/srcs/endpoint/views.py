@@ -184,7 +184,8 @@ def editing_view(request):
 		images = []
 		for tag in tags_list:
 			array = get_images_from_unsplash(tag)
-			images.append(array)
+			for img in array:
+				images.append(img)
 
 		return JsonResponse({"content": images})
 
