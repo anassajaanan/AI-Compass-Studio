@@ -10,6 +10,7 @@ import json
 from .brainstorming_ai import get_ai_response
 from .writing_ai import get_ai_response_writing
 from .unsplash import get_images_from_unsplash
+from .reviews_ai import get_ai_response_reviews
 
 # Create your views here.
 @csrf_exempt
@@ -28,7 +29,7 @@ def translate(request):
 	
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		content = data.get('content')
+		content = data.get('msg')
 		target_language = data.get('language')  # e.g., "French"
 
 		print(content)
@@ -60,7 +61,7 @@ def create_thumbnail(request):
 
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		user_prompt = data.get('prompt')
+		user_prompt = data.get('msg')
 		print(user_prompt)
 		
 		enhanced_prompt = f"Create a detailed, visually appealing thumbnail that illustrates: {user_prompt}. The image should be vibrant, clear, and engaging, suitable for a digital media platform viewer."
@@ -88,7 +89,7 @@ def brainstorming_view(request):
 		data = json.loads(request.body)
 		user_prompt = data.get('msg')
 
-		print(user_prompt)
+		# print(user_prompt)
 
 		response = get_ai_response(user_prompt)
 		if response:
@@ -149,4 +150,14 @@ def editing_view(request):
 
 @csrf_exempt
 def reviews_view(request):
-	pass
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('msg')
+
+		response = get_ai_response_reviews(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
