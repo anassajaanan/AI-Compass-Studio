@@ -7,4 +7,4 @@
 
 curl -X POST \
 	-H "Content-Type: application/json" \
-	-d '{"prompt": "a futuristic cityscape with neon lights for a cyberpunk movie"}' http://127.0.0.1:8000/api/create_thumbnail
+	-d '{"prompt": "I want a scene where there is crypto in Nigeria"}' http://127.0.0.1:8000/api/editing

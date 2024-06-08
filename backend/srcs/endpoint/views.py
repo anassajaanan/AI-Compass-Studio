@@ -4,7 +4,9 @@ from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
 from django.conf import settings
 import json
-
+from .brainstorming_ai import get_ai_response
+from .writing_ai import get_ai_response_writing
+from .unsplash import get_images_from_unsplash
 
 # Create your views here.
 @csrf_exempt
@@ -67,3 +69,74 @@ def create_thumbnail(request):
 		return JsonResponse({"image_url": image_url})
 	else:
 		return JsonResponse({"error": "Invalid request method"})
+	
+
+
+
+
+@csrf_exempt
+def brainstorming_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('prompt')
+
+		response = get_ai_response(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+	
+
+@csrf_exempt
+def writing_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('prompt')
+
+		response = get_ai_response_writing(user_prompt)
+		if response:
+			return JsonResponse({"content": response})
+		else:
+			return JsonResponse({"error": "An error occurred while getting AI response."})
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+
+@csrf_exempt
+def editing_view(request):
+	client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_prompt = data.get('prompt')
+		print(user_prompt)
+	
+
+		response = client.chat.completions.create(
+				model="gpt-4o",
+				messages=[
+					{"role": "system", "content": "You are an assistant trained to extract the most relevant and specific tags from a content description provided by digital creators. These tags should represent key concepts or elements within the content that are suitable for fetching corresponding images." + " Based Based on the description provided, identify and list the most important 3 tags that can be used to fetch images relevant to each aspect of the content."},
+					{"role": "user", "content": user_prompt},
+					{"role": "assistant", "content": "Here are the most important 3 tags that can be used to fetch images relevant to each aspect of the content: Tag_1\nTag_2\nTag_3 "}
+				]
+			)
+		
+		# Extract the tags from the response
+		tags = response.choices[0].message.content
+		tags_list = tags.split("\n")
+		print(tags_list)
+		images = []
+		for tag in tags_list:
+			array = get_images_from_unsplash(tag)
+			images.append(array)
+
+		return JsonResponse({"images": images})
+
+
+	else:
+		return JsonResponse({"error": "Invalid request method"})
+
+@csrf_exempt
+def reviews_view(request):
+	pass

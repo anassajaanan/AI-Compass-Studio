@@ -1,0 +1,49 @@
+import os
+import re
+from openai import OpenAI
+from django.conf import settings
+
+
+
+api_key = settings.OPENAI_API_KEY
+assistant_id = 'asst_q91SWwXHP1m4mLK9m33hIOpS'
+
+client = OpenAI(api_key=api_key)
+
+
+def initialize_thread():
+    new_thread = client.beta.threads.create(
+        messages=[
+            {
+                "role": "user",
+                "content": "You are a sophisticated AI brainstorming assistant tasked with helping content creators explore groundbreaking ideas for digital storytelling on the myco platform. Your expertise includes the latest advancements in media technology, audience engagement strategies, and sustainable content practices. Your role is to facilitate a dynamic ideation process that encourages thinking outside the box, leveraging both current and emerging digital trends.",
+            }])
+    return new_thread
+thread = initialize_thread()
+
+
+def add_message_to_thread(thread_id, question):
+    message = client.beta.threads.messages.create(
+        thread_id=thread.id,
+        role="user",
+        content=question,
+    )
+    return message
+
+
+def get_ai_response(question):
+    add_message_to_thread(thread.id, question)
+    try:
+        run = client.beta.threads.runs.create_and_poll(
+            thread_id=thread.id,
+            assistant_id=assistant_id, )
+        if run.status == "completed":
+            threads_messages = client.beta.threads.messages.list(thread_id=thread.id)
+            latest_message = threads_messages.data[0]
+            response = latest_message.content[0].text.value
+            pattern = r"【\d+:\d+†source】"
+            cleaned_response = re.sub(pattern, "", response)
+            return cleaned_response
+    except Exception as e:
+        print("An error occurred while getting AI response: ", e)
+        return None
