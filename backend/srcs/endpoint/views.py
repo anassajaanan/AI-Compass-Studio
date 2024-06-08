@@ -10,7 +10,7 @@ from openai import OpenAI
 import openai
 from django.conf import settings
 import json
-from .utils import generate_embeddings_from_openai
+from .utils import generate_embeddings_from_openai , get_video_index
 
 
 from .brainstorming_ai import get_ai_response
@@ -103,13 +103,8 @@ def ai_search(request):
 		"index": "PlotSemanticSearch"
 	}}
 ])
-	for documents in results:
-		print(f"Movie Name: {documents["video_title"]},\n Movie Plot: {documents["video_plot"]},\n")
-	return JsonResponse({"results": "bye"})
 	
-
-
-
+	return JsonResponse({"videos": get_video_index([result["video_title"] for result in results])})
 
 @csrf_exempt
 def brainstorming_view(request):
